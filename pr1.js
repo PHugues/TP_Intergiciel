@@ -5,7 +5,7 @@ const { producer } = require("./kafka");
 (async () => {
     try {
         await getApiData();
-        setTimeout(getApiData, 30*60*3600);
+        setInterval(getApiData, 30*60*3600);
     } catch (err) {
         console.error(err);
     }
