@@ -6,6 +6,7 @@ import producer.Pr3;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -13,11 +14,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import org.json.JSONObject;
 
 public class console {
     public static void main(String[] args) throws IOException {
         //Enter data using BufferReader
         while (true){
+            usage();
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             // Reading data using readLine
             String command = reader.readLine();
@@ -29,7 +32,7 @@ public class console {
             String brokers = "92.148.36.86:90:9092";
             switch (arguments[0].toLowerCase()) {
                 case "help":
-                    usage();
+
                     break;
                 case "get_global_values":
                     command1("92.148.36.86:9092","Get_global_values");
@@ -55,14 +58,15 @@ public class console {
     public static void command1(String brokers,String command) throws IOException {
         Pr2.producePr2(brokers,"Topic2",command);
         String sql = Cs2.consumeCs2(brokers,"sql","Topic2");
-        Map<String,String> req = bdd(sql);
+        String req = bdd(sql);
         Pr3.producePr3(brokers,"Topic3",req);
         Cs3.consumeCs3(brokers,"req","Topic3");
     }
-    public static Map<String,String> bdd(String sql){
+    public static String bdd(String sql){
         Connection c = null;
         Statement stmt = null;
         Map<String,String> map = new HashMap<>();
+        JSONObject obj = new JSONObject();
         try {
             Class.forName("org.postgresql.Driver");
             c = DriverManager
@@ -75,7 +79,7 @@ public class console {
             ResultSet rs = stmt.executeQuery(sql);
 
             while ( rs.next() ) {
-                map.put(rs.getString(1),rs.getString(2));
+                obj.put(rs.getString(1),rs.getString(2));
             }
             rs.close();
             stmt.close();
@@ -85,7 +89,8 @@ public class console {
             System.exit(0);
         }
         System.out.println("BDD done");
-        return map;
+
+        return obj.toString();
     }
 
     // Display usage
@@ -96,6 +101,5 @@ public class console {
         System.out.println("Get_confirmed_avg");
         System.out.println("Get_countries_deaths_percent");
         System.out.println("help");
-        System.exit(1);
     }
 }

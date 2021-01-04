@@ -51,6 +51,7 @@ public class Cs2 {
 
             consumer.close();
         }
+        System.out.println("SQL : "+sqlData);
         return sqlData;
     }
 }
