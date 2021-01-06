@@ -7,16 +7,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
+
 import org.json.JSONObject;
 
 public class console {
+
     public static void main(String[] args) throws IOException {
         //Enter data using BufferReader
         while (true){
@@ -29,25 +29,25 @@ public class console {
                 usage();
             }
             // Get the brokers
-            String brokers = "92.148.36.86:90:9092";
+            String brokers = "81.49.203.157:9092";
             switch (arguments[0].toLowerCase()) {
                 case "help":
 
                     break;
                 case "get_global_values":
-                    command1("92.148.36.86:9092","Get_global_values");
+                    command1(brokers,"Get_global_values");
                     break;
                 case "get_country_values":
-                    command1("92.148.36.86:9092","Get_country_values "+arguments[1]);
+                    command1(brokers,"Get_country_values "+arguments[1]);
                     break;
                 case "get_confirmed_avg":
-                    command1("92.148.36.86:9092","Get_confirmed_avg");
+                    command1(brokers,"Get_confirmed_avg");
                     break;
                 case "get_deaths_avg":
-                    command1("92.148.36.86:9092","Get_deaths_avg");
+                    command1(brokers,"Get_deaths_avg");
                     break;
                 case "get_countries_deaths_percent":
-                    command1("92.148.36.86:9092","Get_countries_deaths_percent");
+                    command1(brokers,"Get_countries_deaths_percent");
                     break;
                 default:
                     usage();
@@ -65,8 +65,9 @@ public class console {
     public static String bdd(String sql){
         Connection c = null;
         Statement stmt = null;
-        Map<String,String> map = new HashMap<>();
+        ResultSet rs = null;
         JSONObject obj = new JSONObject();
+        Vector<String> columnNames = new Vector<String>();
         try {
             Class.forName("org.postgresql.Driver");
             c = DriverManager
@@ -76,17 +77,42 @@ public class console {
             System.out.println("Opened database successfully");
 
             stmt = c.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
+            rs = stmt.executeQuery(sql);
+            if (rs != null) {
+                ResultSetMetaData columns = rs.getMetaData();
+                int i = 0;
+                while (i < columns.getColumnCount()) {
+                    i++;
+                    columnNames.add(columns.getColumnName(i));
+                }
 
-            while ( rs.next() ) {
-                obj.put(rs.getString(1),rs.getString(2));
+                while (rs.next()) {
+                    for (i = 0; i < columnNames.size(); i++) {
+                    obj.put(columnNames.get(i),rs.getString(columnNames.get(i)));
+                    }
+                }
             }
-            rs.close();
-            stmt.close();
-            c.close();
+
         } catch ( Exception e ) {
             System.err.println( e.getClass().getName()+": "+ e.getMessage() );
             System.exit(0);
+        }
+
+        finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (c != null) {
+                    c.close();
+                }
+            } catch (Exception mysqlEx) {
+                System.out.println(mysqlEx.toString());
+            }
+
         }
         System.out.println("BDD done");
 

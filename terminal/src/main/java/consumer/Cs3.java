@@ -3,7 +3,7 @@ package consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
@@ -26,17 +26,17 @@ public class Cs3 {
             ConsumerRecords<String, String> records = consumer.poll(100);
 
             for (ConsumerRecord<String, String> record : records) {
-                System.out.println(record.value());
                 JSONParser parser = new JSONParser();
                 JSONObject json = (JSONObject) parser.parse(record.value());
-                Iterator<String> keys = json.keys();
-                while(keys.hasNext()) {
-                    String key = keys.next();
-                    if (json.get(key) instanceof JSONObject) {
-
-                        System.out.println(json.get(key));
-                    }
-                }
+                if(json.get("totaldeaths") != null)System.out.println("Total morts : "+json.get("totaldeaths"));
+                if(json.get("newrecovered") != null)System.out.println("Nouveaux cas remis : "+json.get("newrecovered"));
+                if(json.get("totalconfirmed") != null)System.out.println("Total confirmés : "+json.get("totalconfirmed"));
+                if(json.get("newconfirmed") != null)System.out.println("Nouveaux cas confirmés : "+json.get("newconfirmed"));
+                if(json.get("newdeaths") != null)System.out.println("Nouveaux morts : "+json.get("newdeaths"));
+                if(json.get("totalrecovered") != null)System.out.println("Total remis : "+json.get("totalrecovered"));
+                if(json.get("avgdeaths") != null)System.out.println("Moyenne des cas confirmés sum(pays)/nb(pays) : "+json.get("avgdeaths"));
+                if(json.get("avgconfirmed") != null)System.out.println("Moyenne des Décès sum(pays)/nb(pays) : "+json.get("avgconfirmed"));
+                if(json.get("deaths_pourcent") != null)System.out.println("Pourcentage de Décès par rapport aux cas confirmés : "+json.get("deaths_pourcent"));
             }
         } catch (ParseException e) {
             e.printStackTrace();

@@ -28,10 +28,10 @@ public class Cs2 {
                 String[] split = record.value().split(" ");
                 switch(split[0]) {
                     case "Get_global_values":
-                        sqlData = "SELECT * FROM world";
+                        sqlData = "SELECT NewConfirmed,TotalConfirmed,NewDeaths,TotalDeaths,NewRecovered,TotalRecovered FROM world";
                         break;
                     case "Get_country_values":
-                        sqlData = "SELECT * FROM countries WHERE countrycode = "+ split[1] ;
+                        sqlData = "SELECT NewConfirmed,TotalConfirmed,NewDeaths,TotalDeaths,NewRecovered,TotalRecovered FROM countries WHERE countrycode = '"+ split[1]+"'" ;
                         break;
                     case "Get_confirmed_avg":
                         sqlData = "SELECT avg(TotalConfirmed) as avgconfirmed FROM countries";
@@ -45,6 +45,7 @@ public class Cs2 {
                     default:
                         sqlData = "Erreur command";
                         break;
+
                 }
             }
         } finally {
@@ -52,6 +53,7 @@ public class Cs2 {
             consumer.close();
         }
         System.out.println("SQL : "+sqlData);
+
         return sqlData;
     }
 }
