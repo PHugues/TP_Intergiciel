@@ -29,7 +29,7 @@ public class console {
                 usage();
             }
             // Get the brokers
-            String brokers = "81.49.203.157:9092";
+            String brokers = "localhost:9092";
             switch (arguments[0].toLowerCase()) {
                 case "help":
 
@@ -71,8 +71,8 @@ public class console {
         try {
             Class.forName("org.postgresql.Driver");
             c = DriverManager
-                    .getConnection("jdbc:postgresql://51.75.24.37:5432/covid19",
-                            "demo", "covid19_tp");
+                    .getConnection("jdbc:postgresql://localhost:5432/covid19",
+                            "postgres", "covid19_tp");
             c.setAutoCommit(false);
             System.out.println("Opened database successfully");
 
