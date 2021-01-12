@@ -7,6 +7,7 @@ TP Intergiciel Kafka
 CROCHON Cécile
 DIEVART Cyriaque
 HUGUES Pierre
+THOMAS Roxanne
 M2 TNSI FA
 
 ## Infos
